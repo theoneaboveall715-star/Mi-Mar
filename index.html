@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Una Sorpresa Especial Para Ti</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(120deg, #ffd6e7, #ffefd5, #ffe6ee);
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #5a3e36;
+        }
+        
+        .section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            position: relative;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        /* Header & Navigation */
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 182, 193, 0.9);
+            padding: 15px 0;
+            text-align: center;
+            z-index: 1000;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-dots {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(90, 62, 54, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .dot.active {
+            background: #ff69b4;
+            transform: scale(1.3);
+        }
+        
+        /* Envelope Section */
+        #section-envelope {
+            background: linear-gradient(to bottom, #ffe6ee, #ffd6e7);
+            overflow: hidden;
+        }
+        
+        .snoopy-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.vexels.com/media/users/3/205674/isolated/preview/7c0a8c17344bc371c5121df4b2a8887f-snoopy-corazones.png') center/contain no-repeat;
+            opacity: 0.1;
+            z-index: 1;
+        }
+        
+        .hearts-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .heart {
+            position: absolute;
+            font-size: 20px;
+            color: #ff69b4;
+            opacity: 0.6;
+            animation: floatHeart 15s infinite linear;
+        }
+        
+        .container {
+            max-width: 600px;
+            text-align: center;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 2;
+            border: 3px solid #ffb6c1;
+        }
+        
+        h1 {
+            margin-bottom: 20px;
+            color: #d81b60;
+            font-family: 'Georgia', serif;
+            font-size: 2.5rem;
+        }
+        
+        p.subtitle {
+            margin-bottom: 30px;
+            font-style: italic;
+            color: #d81b60;
+            font-size: 1.2rem;
+        }
+        
+        /* Envelope Styling */
+        .envelope-wrapper {
+            perspective: 1000px;
+            margin: 0 auto 30px;
+            width: 280px;
+            height: 200px;
+        }
+        
+        .envelope {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s;
+            cursor: pointer;
+        }
+        
+        .envelope-front, .envelope-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .envelope-front {
+            background: linear-gradient(45deg, #ff9eb5, #ffccdc);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform: rotateX(0deg);
+            z-index: 2;
+        }
+        
+        .envelope-back {
+            background: linear-gradient(45deg, #ffccdc, #ffd6e7);
+            transform: rotateX(180deg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .envelope-heart {
+            color: #e91e63;
+            font-size: 50px;
+            animation: heartbeat 1.8s infinite;
+        }
+        
+        .envelope-flap {
+            position: absolute;
+            top: -5px;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: linear-gradient(45deg, #ff9eb5, #ff85a1);
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+            border-radius: 15px 15px 0 0;
+            transform-origin: top;
+            transition: transform 0.8s ease-in-out;
+        }
+        
+        .envelope.open .envelope-flap {
+            transform: rotateX(180deg);
+        }
+        
+        /* Message Styling */
+        .message {
+            background: rgba(255, 253, 243, 0.95);
+            color: #5e35b1;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin: 30px auto;
+            max-width: 500px;
+            display: none;
+            transform: scale(0.9);
+            animation: messageAppear 0.5s forwards;
+            border: 2px solid #ffb6c1;
+            position: relative;
+        }
+        
+        .message:before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border: 2px dashed #ffb6c1;
+            border-radius: 20px;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        .message h2 {
+            margin-bottom: 20px;
+            color: #e91e63;
+            font-family: 'Georgia', serif;
+            text-align: center;
+            border-bottom: 2px dotted #ffb6c1;
+            padding-bottom: 10px;
+        }
+        
+        .message p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+            text-align: left;
+            font-size: 17px;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #e91e63, #ad1457);
+            color: white;
+            border: none;
+            padding: 15px 32px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 25px;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(233, 30, 99, 0.4);
+            letter-spacing: 1px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(233, 30, 99, 0.6);
+        }
+        
+        /* Three Parts Section */
+        #section-parts {
+            background: linear-gradient(to bottom, #ffe6ee, #ffd6e7);
+            padding: 80px 20px;
+        }
+        
+        .parts-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .part {
+            flex: 1;
+            min-width: 320px;
+            max-width: 380px;
+            background: rgba(255, 253, 243, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #ffb6c1;
+            min-height: 450px;
+        }
+        
+        .part-number {
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 60px;
+            height: 60px;
+            background: #ff69b4;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 28px;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 2;
+        }
+        
+        .part h3 {
+            color: #d81b60;
+            margin: 20px 0;
+            font-family: 'Georgia', serif;
+            font-size: 28px;
+        }
+        
+        .part p {
+            margin-bottom: 25px;
+            line-height: 1.7;
+            font-size: 18px;
+        }
+        
+        .part-flower {
+            margin: 25px 0;
+            font-size: 70px;
+            color: #ffd700;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+            animation: sway 8s infinite ease-in-out;
+        }
+        
+        .part-content {
+            margin-top: 20px;
+            font-size: 18px;
+            line-height: 1.6;
+            text-align: left;
+            background: rgba(255, 182, 193, 0.2);
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 4px solid #ff69b4;
+        }
+        
+        /* Flower Garden Section */
+        #section-garden {
+            background: linear-gradient(to bottom, #ffd6e7, #ffc2d6);
+            overflow: hidden;
+            padding: 0;
+            justify-content: flex-start;
+            padding-top: 80px;
+        }
+        
+        .garden-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        #flowerCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .garden-text {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            background: rgba(255, 253, 243, 0.85);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            margin: 30px;
+            max-width: 600px;
+            border: 2px solid #ffb6c1;
+        }
+        
+        .garden-text h1 {
+            color: #d81b60;
+            margin-bottom: 20px;
+        }
+        
+        .garden-text p {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+        
+        /* Mensajes flotantes románticos y mágicos */
+.floating-message {
+    position: absolute;
+    color: #fff;
+    font-size: 22px;
+    font-weight: 700;
+    z-index: 30;
+    font-family: 'Georgia', serif;
+    padding: 12px 25px;
+    background: linear-gradient(45deg, #ff5f6d, #ffc371, #ff4081);
+    border-radius: 50px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.4), 0 0 15px rgba(255,255,255,0.5) inset;
+    opacity: 0;
+    white-space: nowrap;
+    text-shadow: 0 0 8px #fff, 0 0 15px #ff69b4, 0 0 20px #ff4081;
+    animation: glow 2s infinite alternate;
+}
+
+/* Animación horizontal de derecha a izquierda */
+@keyframes float-horizontal {
+    0% {
+        transform: translateX(100vw);
+        opacity: 0;
+    }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+}
+
+/* Parpadeo y brillo suave */
+@keyframes glow {
+    0% { text-shadow: 0 0 8px #fff, 0 0 15px #ff69b4, 0 0 20px #ff4081; }
+    50% { text-shadow: 0 0 12px #fff, 0 0 20px #ff69b4, 0 0 25px #ff4081; }
+    100% { text-shadow: 0 0 8px #fff, 0 0 15px #ff69b4, 0 0 20px #ff4081; }
+}
+
+        
+        /* Music Player */
+        .music-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 253, 243, 0.9);
+            padding: 12px;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            z-index: 100;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid #ffb6c1;
+        }
+        
+        .music-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #e91e63, #ad1457);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            margin: 0 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+        }
+        
+        .music-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        /* Decorative Elements */
+        .decoration {
+            position: absolute;
+            z-index: 1;
+            opacity: 0.15;
+            font-size: 100px;
+            color: #ff69b4;
+        }
+        
+        /* Animations */
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes messageAppear {
+            to { transform: scale(1); }
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.9;
+            }
+            90% {
+                opacity: 0.9;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes floatHeart {
+            0% {
+                transform: translateY(100vh) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-100px) translateX(100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes sway {
+            0% { transform: rotate(-3deg); }
+            50% { transform: rotate(3deg); }
+            100% { transform: rotate(-3deg); }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 900px) {
+            .parts-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .part {
+                min-width: 100%;
+                max-width: 500px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .message {
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .part {
+                padding: 25px;
+                min-height: 400px;
+            }
+            
+            .part h3 {
+                font-size: 24px;
+            }
+            
+            .part p {
+                font-size: 16px;
+            }
+            
+            .part-flower {
+                font-size: 50px;
+            }
+            
+            .part-number {
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header with Navigation -->
+    <div class="header">
+        <div class="nav-dots">
+            <div class="dot active" data-section="section-envelope"></div>
+            <div class="dot" data-section="section-parts"></div>
+            <div class="dot" data-section="section-garden"></div>
+        </div>
+    </div>
+
+    <!-- Envelope Section -->
+    <div id="section-envelope" class="section">
+        <div class="snoopy-bg"></div>
+        <div class="hearts-container" id="hearts-container"></div>
+        
+        <div class="decoration" style="top: 10%; left: 5%;">🌼</div>
+        <div class="decoration" style="top: 15%; right: 7%;">💮</div>
+        <div class="decoration" style="bottom: 20%; left: 10%;">🌺</div>
+        <div class="decoration" style="bottom: 15%; right: 8%;">🌻</div>
+        
+        <div class="container">
+            <h1>Para Mi Amor</h1>
+            <p class="subtitle">Haz click en el sobre para revelar mi sorpresa</p>
+            
+            <div class="envelope-wrapper">
+                <div class="envelope" id="envelope">
+                    <div class="envelope-front">
+                        <div class="envelope-heart">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                    </div>
+                    <div class="envelope-back">
+                        <p>¡Tengo un mensaje para ti enojona!</p>
+                    </div>
+                    <div class="envelope-flap"></div>
+                </div>
+            </div>
+            
+            <div class="message" id="message">
+                <h2>Mi Querida,</h2>
+                <p>Aunque la distancia nos separe, cada día mi cariño por ti crece más. Estas flores amarillas representan la luz que traes a mi vida, incluso desde lejos.</p>
+                <p>En este día especial, quiero que sepas que siempre estás en mis pensamientos y en mi corazón. Atesoro cada momento que hemos compartido en llamadas y el dia a dia </p>
+                <p>Con todo mi amor,</p>
+                <p>Tu niño</p>
+                
+                <button class="btn" id="viewPartsBtn">
+                    <i class="fas fa-forward"></i> Continuar
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Three Parts Section -->
+    <div id="section-parts" class="section hidden">
+        <div class="decoration" style="top: 10%; left: 5%;">💛</div>
+        <div class="decoration" style="top: 15%; right: 7%;">🌸</div>
+        <div class="decoration" style="bottom: 20%; left: 10%;">🌷</div>
+        <div class="decoration" style="bottom: 15%; right: 8%;">💮</div>
+        
+        <h1 style="color: #d81b60; margin-bottom: 40px; text-align: center;">Cosas que me gustan de ti</h1>
+        
+        <div class="parts-container">
+            <div class="part">
+                <div class="part-number">1</div>
+                <div class="part-flower">🌼</div>
+                <h3>Tu voz</h3>
+                <p>Tu voz es algo que amo demasiado se ha vuelto muy ensencial en mi vida cuando te escucho hablar simplemente me generas tranquilidad</p>
+                <div class="part-content">
+                    <p>Tu acento y tu forma forman parte de mi debilidad y mas cuando me dices "ay amor" " mi amor" escuchar esas cosas simplemente me enamoran y me encantan.</p>
+                </div>
+            </div>
+            
+            <div class="part">
+                <div class="part-number">2</div>
+                <div class="part-flower">🌻</div>
+                <h3>Lo Que Más Admiro de Ti</h3>
+                <p>Hay tantas cosas que admiro de ti. Tu amor, tus ojos y esa alma interior que ilumina a todo a tu alrededor.</p>
+                <div class="part-content">
+                    <p>Tu capacidad para encontrar belleza en las pequeñas cosas y tu corazón generoso son solo algunas de las razones por las que te quiero mucho mi pitufina.</p>
+                </div>
+            </div>
+            
+            <div class="part">
+                <div class="part-number">3</div>
+                <div class="part-flower">🌺</div>
+                <h3>Nuestro Futuro Juntos</h3>
+                <p>Sueño con el día que estemos juntos, construyendo una vida llena de amor y momentos inolvidables.</p>
+                <div class="part-content">
+                    <p>Imagino nuestras mañanas juntos, nuestras risas compartidas y todos los sueños que convertiremos en realidad. Volado? quizas un poco. Lo deseo? como no tienes idea.</p>
+                </div>
+            </div>
+        </div>
+        
+        <button class="btn" id="viewGardenBtn" style="margin-top: 50px;">
+            <i class="fas fa-gift"></i> Ver Mi Regalo Para Ti
+        </button>
+    </div>
+    
+   <!-- Flower Garden Section -->
+<div id="section-garden" class="section hidden">
+    <div class="canvas-container">
+        <canvas id="flowerCanvas"></canvas>
+    </div>
+    
+    <div class="garden-text">
+        <h1>Para Ti, Con Todo Mi Amor</h1>
+        <p>Estas flores amarillas son un símbolo de mi amor por ti. Cada una representa un momento especial que hemos compartido y los muchos más que vendrán.</p>
+        <p>Que esta pequeña muestra de cariño te recuerde lo mucho que significas para mí, incluso cuando la distancia nos separa.</p>
+        
+        <button class="btn" id="restartBtn">
+            <i class="fas fa-redo"></i> Volver al Inicio
+        </button>
+
+        <button class="btn" id="playSongBtn">
+            <i class="fas fa-play"></i> Escuchar mi canción
+        </button>
+
+        <audio id="dameBesito" loop>
+            <source src="https://raw.githubusercontent.com/theoneaboveall715-star/Mi-Mar/main/Dame_Un_Besito-41854-mobiles24.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+</div>
+
+<div class="music-player" id="musicPlayer" style="display: none;">
+    <audio id="bgMusic" loop>
+        <source src="https://cdn.pixabay.com/download/audio/2022/01/20/audio_172d7dec90.mp3?filename=soft-sweet-romantic-background-music-6446.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="music-btn" id="playBtn">
+        <i class="fas fa-play"></i>
+    </div>
+    <div class="music-btn" id="pauseBtn">
+        <i class="fas fa-pause"></i>
+    </div>
+</div>
+
+
+
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // --- Elements ---
+    const envelope = document.getElementById('envelope');
+    const message = document.getElementById('message');
+    const viewPartsBtn = document.getElementById('viewPartsBtn');
+    const viewGardenBtn = document.getElementById('viewGardenBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const sectionEnvelope = document.getElementById('section-envelope');
+    const sectionParts = document.getElementById('section-parts');
+    const sectionGarden = document.getElementById('section-garden');
+    const bgMusic = document.getElementById('bgMusic');
+    const playBtn = document.getElementById('playBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const musicPlayer = document.getElementById('musicPlayer');
+    const dots = document.querySelectorAll('.dot');
+    const canvas = document.getElementById('flowerCanvas');
+    const ctx = canvas.getContext('2d');
+    const heartsContainer = document.getElementById('hearts-container');
+    const playSongBtn = document.getElementById('playSongBtn');
+    const dameBesito = document.getElementById('dameBesito');
+
+    // --- Hearts ---
+    function createHearts() {
+        for (let i = 0; i < 20; i++) {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.innerHTML = '❤';
+            heart.style.left = `${Math.random() * 100}%`;
+            heart.style.animationDelay = `${Math.random() * 15}s`;
+            heart.style.fontSize = `${15 + Math.random() * 25}px`;
+            heartsContainer.appendChild(heart);
+        }
+    }
+    createHearts();
+
+    // --- Floating Messages ---
+    function createFloatingMessages() {
+        const messages = [
+            "Te quiero ❤️", "Eres mi sol ☀️", "Mi corazón es tuyo 💖",
+            "Siempre contigo 🌸", "Eres hermosa 🌷", "Mi amor por ti crece 💞",
+            "Deseo abrazarte 🤗", "Eres mi sueño ✨", 
+            "Eres mi todo 💛", "Mi vida eres tú 💕",
+            "Algún día estaré contigo 🌹", "Eres mi inspiración 🌟"
+        ];
+
+        messages.forEach((msg, i) => {
+            setTimeout(() => {
+                const msgEl = document.createElement('div');
+                msgEl.className = 'floating-message';
+                msgEl.textContent = msg;
+                msgEl.style.top = `${10 + Math.random() * 80}%`;
+                const duration = 15 + Math.random() * 15;
+                msgEl.style.animation = `float-horizontal ${duration}s linear forwards, glow 2s infinite alternate`;
+                sectionGarden.appendChild(msgEl);
+                setTimeout(() => { msgEl.remove(); }, duration * 1000);
+            }, i * 2000);
+        });
+
+        setTimeout(createFloatingMessages, messages.length * 2000);
+    }
+
+    // --- Canvas Flowers ---
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function drawRealisticFlower(x, y, size) {
+        // Stem
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x, y + size * 3);
+        ctx.strokeStyle = "#2ecc71";
+        ctx.lineWidth = size / 8;
+        ctx.stroke();
+
+        // Leaves
+        ctx.beginPath();
+        ctx.ellipse(x - size/3, y + size, size/2, size/4, Math.PI/4, 0, Math.PI * 2);
+        ctx.fillStyle = "#27ae60";
+        ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(x + size/3, y + size * 1.5, size/2, size/4, -Math.PI/4, 0, Math.PI * 2);
+        ctx.fillStyle = "#27ae60";
+        ctx.fill();
+
+        // Petals
+        const time = Date.now() / 2000;
+        const sway = Math.sin(time + x * 0.005) * 0.05;
+        for (let i = 0; i < 8; i++) {
+            const angle = (i / 8) * Math.PI * 2 + sway;
+            const petalX = x + Math.cos(angle) * size;
+            const petalY = y + Math.sin(angle) * size;
+            ctx.beginPath();
+            ctx.ellipse(petalX, petalY, size * 0.8, size * 0.6, angle, 0, Math.PI * 2);
+            ctx.fillStyle = "#ffdd59";
+            ctx.fill();
+            ctx.strokeStyle = "#ffc107";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        // Center
+        ctx.beginPath();
+        ctx.arc(x, y, size / 3, 0, Math.PI * 2);
+        ctx.fillStyle = "#ff9800";
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(x, y, size / 6, 0, Math.PI * 2);
+        ctx.fillStyle = "#ff5722";
+        ctx.fill();
+    }
+
+    function animateFlowers() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        gradient.addColorStop(0, "#ffd6e7");
+        gradient.addColorStop(1, "#ffc2d6");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        for (let i = 0; i < 12; i++) {
+            const x = 50 + (i % 4) * (canvas.width / 4);
+            const y = 100 + Math.floor(i / 4) * (canvas.height / 3);
+            const size = 25 + Math.random() * 25;
+            drawRealisticFlower(x, y, size);
+        }
+
+        requestAnimationFrame(animateFlowers);
+    }
+
+    function drawFlowers() {
+        animateFlowers();
+    }
+
+    // --- Envelope ---
+    envelope.addEventListener('click', () => {
+        envelope.classList.add('open');
+        setTimeout(() => message.style.display = 'block', 800);
+    });
+
+    // --- Navigation Dots ---
+    dots.forEach(dot => {
+        dot.addEventListener('click', function() {
+            const sectionId = this.dataset.section;
+            document.querySelectorAll('.section').forEach(sec => sec.classList.add('hidden'));
+            document.getElementById(sectionId).classList.remove('hidden');
+            dots.forEach(d => d.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+
+    // --- Section Buttons ---
+    viewPartsBtn.addEventListener('click', () => {
+        sectionEnvelope.classList.add('hidden');
+        sectionParts.classList.remove('hidden');
+        dots.forEach(d => d.classList.remove('active'));
+        document.querySelector('.dot[data-section="section-parts"]').classList.add('active');
+    });
+
+    viewGardenBtn.addEventListener('click', () => {
+        sectionParts.classList.add('hidden');
+        sectionGarden.classList.remove('hidden');
+        musicPlayer.style.display = 'flex';
+        drawFlowers();
+        createFloatingMessages();
+        playBtn.click();
+        dots.forEach(d => d.classList.remove('active'));
+        document.querySelector('.dot[data-section="section-garden"]').classList.add('active');
+    });
+
+    restartBtn.addEventListener('click', () => {
+        sectionGarden.classList.add('hidden');
+        sectionEnvelope.classList.remove('hidden');
+        musicPlayer.style.display = 'none';
+        bgMusic.pause();
+        dameBesito.pause();
+        dameBesito.currentTime = 0; // reset Dame Un Besito
+        playSongBtn.style.display = 'flex';
+        dots.forEach(d => d.classList.remove('active'));
+        document.querySelector('.dot[data-section="section-envelope"]').classList.add('active');
+    });
+
+    // --- Music Buttons ---
+    playBtn.addEventListener('click', () => {
+        bgMusic.play();
+        playBtn.style.display = 'none';
+        pauseBtn.style.display = 'flex';
+    });
+
+    pauseBtn.addEventListener('click', () => {
+        bgMusic.pause();
+        pauseBtn.style.display = 'none';
+        playBtn.style.display = 'flex';
+    });
+
+    // --- Play Dame Un Besito ---
+    playSongBtn.addEventListener('click', () => {
+        dameBesito.play();
+        playSongBtn.style.display = 'none';
+    });
+});
+</script>
+
+
+</body>
+</html>
